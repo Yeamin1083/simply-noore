@@ -67,57 +67,57 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: #0B100D;
-  --surface: #121A15;
-  --surface-2: #1A251E;
-  --text: #EEF1EA;
-  --muted: #A4B1A6;
-  --border: rgba(190, 215, 190, .16);
-  --accent: #A9C2A4;
-  --accent-ink: #B9D0B4;
-  --gold: #E6D3A8;
-  --gold-ink: #E6D3A8;
-  --page: linear-gradient(160deg, #16241C 0%, #0B100D 100%);
-  --btn-bg: #A9C2A4;
-  --btn-fg: #0B100D;
+  --bg: #0C0F0E;
+  --surface: #141816;
+  --surface-2: #1B211E;
+  --text: #F7F7F4;
+  --muted: #A1ACA4;
+  --border: rgba(255, 255, 255, .10);
+  --accent: #DFCA9B;
+  --accent-ink: #F0E2C2;
+  --gold: #DFCA9B;
+  --gold-ink: #EADCB9;
+  --page: linear-gradient(160deg, #131815 0%, #090C0B 100%);
+  --btn-bg: #DFCA9B;
+  --btn-fg: #0C0F0E;
   --edge: 1;
-  --glowo: .28;
+  --glowo: .32;
   --stars: 1;
   --aurora: 1;
-  --deep-bg: #101C16;
-  --deep-ink: #EEF1EA;
-  --deep-muted: #A4B1A6;
-  --deep-btn-bg: #A9C2A4;
-  --deep-btn-fg: #0B100D;
-  --deep-accent: #E6D3A8;
-  --sage-bg: #1F2E25;
-  --sage-ink: #EEF1EA;
-  --sage-muted: #B6C3B8;
-  --sage-btn-bg: #A9C2A4;
-  --sage-btn-fg: #0B100D;
-  --wash0: #1D2B23;
-  --wash1: #2A2D24;
-  --wash2: #17251F;
-  --ghost0: #2A3B30;
-  --ghost1: #38382B;
-  --ghost2: #22332B;
-  --wash-ink: #EEF1EA;
-  --wash-muted: #B6C3B8;
-  --shadow: 0 18px 50px -20px rgba(0, 0, 0, .7);
-  --price: #E6D3A8;
-  --overlay: rgba(3, 6, 4, .65);
-  --chipbg: #121A15;
-  --espresso: #A9C2A4;
-  --espresso-2: #1F2E25;
-  --champagne: #E6D3A8;
-  --peach: #5C4336;
-  --rose: #5C383C;
-  --blush: #3D2D2E;
-  --sand: #3D372A;
-  --ice-bg: #121A15;
-  --ice-ink: #EEF1EA;
-  --blue-deep: #0B100D;
-  --blue-glow: #A9C2A4;
+  --deep-bg: #101412;
+  --deep-ink: #F7F7F4;
+  --deep-muted: #A8B3AB;
+  --deep-btn-bg: #DFCA9B;
+  --deep-btn-fg: #0C0F0E;
+  --deep-accent: #E8D5AA;
+  --sage-bg: #161D19;
+  --sage-ink: #F7F7F4;
+  --sage-muted: #A8B3AB;
+  --sage-btn-bg: #DFCA9B;
+  --sage-btn-fg: #0C0F0E;
+  --wash0: #151A17;
+  --wash1: #1A201D;
+  --wash2: #121614;
+  --ghost0: #1F2722;
+  --ghost1: #242E28;
+  --ghost2: #1B221E;
+  --wash-ink: #F7F7F4;
+  --wash-muted: #A8B3AB;
+  --shadow: 0 20px 60px -20px rgba(0, 0, 0, .85);
+  --price: #DFCA9B;
+  --overlay: rgba(4, 6, 5, .72);
+  --chipbg: #161C19;
+  --espresso: #DFCA9B;
+  --espresso-2: #1A211D;
+  --champagne: #DFCA9B;
+  --peach: #2E1F1A;
+  --rose: #2C1820;
+  --blush: #251B20;
+  --sand: #252219;
+  --ice-bg: #141916;
+  --ice-ink: #F7F7F4;
+  --blue-deep: #0A0D0C;
+  --blue-glow: #DFCA9B;
   color-scheme: dark;
 }
 
@@ -479,9 +479,9 @@ html.bn .pill {
 .t-moss { --p1: #A7B79A; --p2: #5E7562; }
 .t-stone{ --p1: #E4E0D5; --p2: #ABA698; }
 
-:root[data-theme="dark"] .t-sage { --p1: #6F8A6C; --p2: #2C3F30; }
-:root[data-theme="dark"] .t-oat  { --p1: #8A7C62; --p2: #3D372A; }
-:root[data-theme="dark"] .t-stone{ --p1: #7C8179; --p2: #2E332E; }
+:root[data-theme="dark"] .t-sage { --p1: #2E3832; --p2: #18201B; }
+:root[data-theme="dark"] .t-oat  { --p1: #383025; --p2: #1F1B14; }
+:root[data-theme="dark"] .t-stone{ --p1: #2C302D; --p2: #181B19; }
 
 /* Standard format for product boxes (no arches) */
 .arch {

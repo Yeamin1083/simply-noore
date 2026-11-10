@@ -50,7 +50,17 @@ export function CartDrawer() {
           ) : (
             cart.map((item, i) => (
               <div key={`${item.variantId}-${item.size}-${i}`} className="item">
-                <div className="th ph t-sage" />
+                <div className="th overflow-hidden rounded-lg bg-surface-2 border border-border/40">
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="th ph t-sage" />
+                  )}
+                </div>
                 <div>
                   <b>{item.title}</b>
                   <small>{item.colorName} · Size {item.size}</small>
