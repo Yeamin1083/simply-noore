@@ -1257,18 +1257,40 @@ function AdminContent() {
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap">
+                    {/* Status Changer Select */}
+                    <select
+                      value={o.status}
+                      onChange={(e) => updateOrderStatus(o.id, e.target.value as OrderStatus)}
+                      className="px-2 py-1 rounded bg-surface border border-border text-xs text-text font-medium focus:outline-none focus:ring-1 focus:ring-accent-ink"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Ready to Dispatch">Ready to Dispatch</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+
                     {o.status === "Pending" && (
                       <button
                         onClick={() => handleVerifyPayment(o.id)}
-                        className="px-3 py-1.5 rounded bg-[#E2136E] text-white font-medium hover:opacity-90"
+                        className="px-3 py-1.5 rounded bg-[#E2136E] text-white font-medium hover:opacity-90 shadow-sm"
                       >
                         Verify Payment
                       </button>
                     )}
-                    {o.status === "Ready to Dispatch" && (
+                    {o.status === "Processing" && (
+                      <button
+                        onClick={() => updateOrderStatus(o.id, "Ready to Dispatch")}
+                        className="px-3 py-1.5 rounded bg-indigo-600 text-white font-medium hover:bg-indigo-700 shadow-sm"
+                      >
+                        Ready to Dispatch
+                      </button>
+                    )}
+                    {(o.status === "Ready to Dispatch" || o.status === "Processing") && (
                       <button
                         onClick={() => handleDispatchSteadfast(o.id)}
-                        className="px-3 py-1.5 rounded bg-emerald-600 text-white font-medium hover:bg-emerald-700"
+                        className="px-3 py-1.5 rounded bg-emerald-600 text-white font-medium hover:bg-emerald-700 shadow-sm"
                       >
                         Dispatch Steadfast
                       </button>

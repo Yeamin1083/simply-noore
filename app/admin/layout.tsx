@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -25,6 +25,76 @@ import {
   Tag,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
+
+function AdminSidebarNav({
+  navSections,
+  setMobileMenuOpen,
+}: {
+  navSections: Array<{
+    group: string;
+    items: Array<{
+      label: string;
+      href: string;
+      icon: any;
+      badge?: string;
+    }>;
+  }>;
+  setMobileMenuOpen: (open: boolean) => void;
+}) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get("tab") || "overview";
+
+  return (
+    <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
+      {navSections.map((sec, idx) => (
+        <div key={idx} className="space-y-1">
+          <h4 className="px-3 text-[10px] uppercase tracking-wider font-semibold text-muted font-mono">
+            {sec.group}
+          </h4>
+          <ul className="space-y-0.5">
+            {sec.items.map((item, itemIdx) => {
+              const Icon = item.icon;
+              let isActive = false;
+              if (item.href === "/admin") {
+                isActive = currentTab === "overview" && (pathname === "/admin" || pathname?.endsWith("/admin/"));
+              } else if (item.href.includes("?tab=")) {
+                const itemTab = item.href.split("?tab=")[1];
+                isActive = currentTab === itemTab;
+              } else {
+                isActive = pathname === item.href;
+              }
+
+              return (
+                <li key={itemIdx}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                      isActive
+                        ? "bg-accent/15 text-accent-ink font-semibold border-l-2 border-accent-ink"
+                        : "text-muted hover:text-text hover:bg-surface-2/50"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </span>
+                    {item.badge && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 font-semibold">
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+}
 
 export default function AdminLayout({
   children,

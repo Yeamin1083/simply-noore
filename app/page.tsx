@@ -721,61 +721,76 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. SHOP BY MOMENT (HORIZONTAL RAIL) */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-border/40 bg-surface/20 overflow-hidden">
+      {/* 7. SHOP BY MOMENT (COMPACT EDITORIAL RAIL) */}
+      <section className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 border-t border-border/40 bg-surface/20 overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-end justify-between gap-4 mb-8">
+          <div className="flex items-end justify-between gap-4 mb-6">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] font-semibold text-accent-ink dark:text-[#DFCA9B] mb-1">
+              <p className="text-[11px] uppercase tracking-[0.2em] font-semibold text-accent-ink dark:text-[#DFCA9B] mb-1">
                 06 / Moments
               </p>
-              <h2 className="font-serif text-3xl sm:text-5xl font-medium tracking-tight text-text">
-                Collected in <em>soft light.</em>
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-text">
+                Collected in <em className="italic font-normal text-accent-ink dark:text-[#DFCA9B]">soft light.</em>
               </h2>
+              <p className="text-xs text-muted mt-1 hidden sm:block">
+                {lang === "bn"
+                  ? "জীবনের প্রতিটি বিশেষ মুহূর্তের জন্য নির্বাচিত শালীন পোশাক।"
+                  : "Silhouettes curated for life's meaningful occasions."}
+              </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
-                onClick={() => scrollRail(-340)}
-                className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-surface-2 transition-colors"
+                onClick={() => scrollRail(-240)}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-border flex items-center justify-center hover:bg-surface-2 transition-colors active:scale-95"
                 aria-label="Previous moments"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => scrollRail(340)}
-                className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-surface-2 transition-colors"
+                onClick={() => scrollRail(240)}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-border flex items-center justify-center hover:bg-surface-2 transition-colors active:scale-95"
                 aria-label="Next moments"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Scrollable Rail */}
+          {/* Compact Scrollable Rail */}
           <div
             ref={railRef}
-            className="flex gap-5 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory"
+            className="flex gap-3 sm:gap-4 overflow-x-auto pb-3 scrollbar-none snap-x snap-mandatory scroll-smooth"
           >
             {MOMENTS.map((moment) => (
               <Link
                 key={moment.id}
-                href={`/moment/${moment.slug}`}
-                className="min-w-[260px] sm:min-w-[300px] snap-start rounded-3xl overflow-hidden bg-surface dark:bg-[#141816] border border-border/60 group shadow-sm hover:shadow-md transition-all flex-shrink-0"
+                href="/shop"
+                className="w-[150px] sm:w-[190px] md:w-[210px] snap-start rounded-2xl overflow-hidden group flex-shrink-0 transition-transform duration-300 hover:-translate-y-1"
               >
-                <div className="aspect-[3/4] overflow-hidden relative">
+                <div className="aspect-[4/5] overflow-hidden relative rounded-2xl bg-surface-2 border border-border/50 shadow-sm group-hover:shadow-md">
                   <img
                     src={moment.image}
                     alt={moment.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                  <span className="absolute bottom-3 left-3 text-white font-serif text-xl font-medium">
-                    {lang === "bn" ? moment.nameBn : moment.name}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent pointer-events-none" />
+
+                  {/* Top Chic Tag */}
+                  <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md text-[9px] uppercase tracking-widest font-semibold text-white/90">
+                    {moment.slug}
                   </span>
+
+                  {/* Bottom Title */}
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5">
+                    <span className="text-white font-serif text-sm sm:text-base font-medium line-clamp-1 block drop-shadow-sm">
+                      {lang === "bn" ? moment.nameBn : moment.name}
+                    </span>
+                  </div>
                 </div>
-                <div className="p-4">
-                  <p className="text-xs text-muted line-clamp-2">{moment.description}</p>
+
+                <div className="pt-2 px-1">
+                  <p className="text-[11px] text-muted truncate leading-tight">{moment.description}</p>
                 </div>
               </Link>
             ))}

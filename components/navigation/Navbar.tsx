@@ -42,11 +42,6 @@ export function Navbar() {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Separate Admin navigation from Storefront navigation
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
-
   useEffect(() => {
     let lastY = 0;
     const onScroll = () => {
@@ -82,6 +77,11 @@ export function Navbar() {
     }
     return () => document.documentElement.classList.remove("lock");
   }, [mobileMenuOpen]);
+
+  // Separate Admin navigation from Storefront navigation (after all hooks)
+  if (pathname?.includes("/admin")) {
+    return null;
+  }
 
   return (
     <>

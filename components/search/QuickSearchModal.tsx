@@ -15,7 +15,8 @@ interface QuickSearchModalProps {
 export function QuickSearchModal({ isOpen, onClose }: QuickSearchModalProps) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const { lang, setQuickViewProduct } = useStore();
+  const { lang, setQuickViewProduct, products } = useStore();
+  const allProducts = products && products.length > 0 ? products : PRODUCTS;
 
   useEffect(() => {
     if (isOpen) {
@@ -40,18 +41,18 @@ export function QuickSearchModal({ isOpen, onClose }: QuickSearchModalProps) {
   if (!isOpen) return null;
 
   const filteredProducts = query.trim()
-    ? PRODUCTS.filter((p) => {
+    ? allProducts.filter((p) => {
         const q = query.toLowerCase();
         return (
           p.title.toLowerCase().includes(q) ||
-          p.titleBn.toLowerCase().includes(q) ||
+          (p.titleBn && p.titleBn.toLowerCase().includes(q)) ||
           p.category.toLowerCase().includes(q) ||
-          p.fabricName.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q)) ||
-          p.occasions.some((o) => o.toLowerCase().includes(q))
+          (p.fabricName && p.fabricName.toLowerCase().includes(q)) ||
+          (p.tags && p.tags.some((t) => t.toLowerCase().includes(q))) ||
+          (p.occasions && p.occasions.some((o) => o.toLowerCase().includes(q)))
         );
       })
-    : PRODUCTS.slice(0, 4);
+    : allProducts.slice(0, 4);
 
   const popularKeywords = ["Abayas", "Korean Nida", "Three Piece", "Corsets", "Eid Edit", "Linen"];
 
