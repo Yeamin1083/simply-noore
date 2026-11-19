@@ -113,8 +113,8 @@ export function AnnouncementRibbon() {
 
   const handleApplyCoupon = (code: string) => {
     applyCoupon(code);
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(code);
+    if (typeof window !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(code).catch(() => {});
     }
     setCopiedCode(code);
     setTimeout(() => setCopiedCode(null), 3000);
@@ -125,6 +125,8 @@ export function AnnouncementRibbon() {
       className="relative z-40 bg-[#141C17] dark:bg-[#0A0E0C] text-[#F5F2EB] dark:text-[#EAE5D9] border-b border-white/10 text-xs overflow-hidden select-none transition-colors"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
       role="region"
       aria-label="Atelier News and Announcements"
     >
@@ -132,16 +134,19 @@ export function AnnouncementRibbon() {
       <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-[#DFCA9B]/40 to-transparent pointer-events-none" />
 
       {/* Main bar container */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
-        {/* Left: News badge & Quick navigation controls */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-3">
+        {/* Left: badge & stepper */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#DFCA9B]/15 text-[#DFCA9B] border border-[#DFCA9B]/25 font-semibold text-[10px] tracking-wider uppercase">
+          <span className="inline-flex items-center gap-1.5 px-1.5 sm:px-2 py-0.5 rounded-full bg-[#DFCA9B]/15 text-[#DFCA9B] border border-[#DFCA9B]/25 font-semibold text-[10px] tracking-wider uppercase whitespace-nowrap">
             {currentItem.couponCode ? (
-              <Tag className="w-2.5 h-2.5 text-[#DFCA9B]" />
+              <Tag className="w-3 h-3 sm:w-2.5 sm:h-2.5 text-[#DFCA9B]" />
             ) : (
-              <Sparkles className="w-2.5 h-2.5 animate-pulse text-[#DFCA9B]" />
+              <Sparkles className="w-3 h-3 sm:w-2.5 sm:h-2.5 animate-pulse text-[#DFCA9B]" />
             )}
-            <span>{lang === "bn" ? currentItem.badgeBn : currentItem.badgeEn}</span>
+            {/* label hidden on mobile so it never wraps */}
+            <span className="hidden sm:inline">
+              {lang === "bn" ? currentItem.badgeBn : currentItem.badgeEn}
+            </span>
           </span>
 
           {/* Stepper buttons */}
@@ -168,13 +173,13 @@ export function AnnouncementRibbon() {
           </div>
         </div>
 
-        {/* Center: Dynamic News Announcement with Smooth Transition */}
-        <div className="flex-1 overflow-hidden text-center px-1 sm:px-4">
+        {/* Center: one line, text truncates, CTA never shrinks */}
+        <div className="flex-1 min-w-0 px-0 sm:px-4">
           <div
             key={currentItem.id}
-            className="inline-flex items-center justify-center gap-2 transition-all duration-500 ease-out animate-fadeIn"
+            className="flex items-center justify-start sm:justify-center gap-2 min-w-0 animate-fadeIn"
           >
-            <span className="text-white/95 font-medium tracking-wide text-[11px] sm:text-xs">
+            <span className="min-w-0 truncate text-white/95 font-medium tracking-wide text-[11px] sm:text-xs leading-none">
               {lang === "bn" ? currentItem.textBn : currentItem.textEn}
             </span>
 
@@ -182,7 +187,7 @@ export function AnnouncementRibbon() {
               <button
                 type="button"
                 onClick={() => handleApplyCoupon(currentItem.couponCode!)}
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#DFCA9B] text-black font-semibold text-[10px] uppercase tracking-wider ml-1.5 hover:bg-[#edd8a9] transition-all"
+                className="flex-shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#DFCA9B] text-black font-semibold text-[10px] uppercase tracking-wider hover:bg-[#edd8a9] transition-all"
                 title="Click to apply and copy code"
               >
                 {copiedCode === currentItem.couponCode ? (
@@ -200,16 +205,20 @@ export function AnnouncementRibbon() {
             ) : (
               <Link
                 href={currentItem.href}
-                className="inline-flex items-center gap-1 text-[#DFCA9B] hover:text-white underline underline-offset-4 font-semibold text-[11px] uppercase tracking-wider ml-1 flex-shrink-0 transition-colors"
+                aria-label={lang === "bn" ? currentItem.ctaBn : currentItem.ctaEn}
+                className="flex-shrink-0 whitespace-nowrap inline-flex items-center gap-1 text-[#DFCA9B] hover:text-white font-semibold text-[11px] uppercase tracking-wider transition-colors sm:underline sm:underline-offset-4"
               >
-                <span>{lang === "bn" ? currentItem.ctaBn : currentItem.ctaEn}</span>
-                <ArrowRight className="w-3 h-3" />
+                {/* text CTA only on sm+, arrow-only on mobile */}
+                <span className="hidden sm:inline">
+                  {lang === "bn" ? currentItem.ctaBn : currentItem.ctaEn}
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               </Link>
             )}
           </div>
         </div>
 
-        {/* Right: Dismiss button */}
+        {/* Right: dismiss */}
         <button
           onClick={() => setDismissed(true)}
           className="p-1 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
