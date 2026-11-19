@@ -1,17 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { Tag, Check, X, ArrowRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 export function CartDrawer() {
-  const { isCartOpen, setIsCartOpen, cart, updateCartQty, cartTotal } = useStore();
+  const {
+    isCartOpen,
+    setIsCartOpen,
+    cart,
+    updateCartQty,
+    cartTotal,
+    appliedCoupon,
+    applyCoupon,
+    removeCoupon,
+    discountAmount,
+    finalCartTotal,
+  } = useStore();
+
+  const [couponInput, setCouponInput] = useState("");
+  const [couponMsg, setCouponMsg] = useState<{ text: string; error?: boolean } | null>(null);
 
   const FREE = 5000;
   const left = FREE - cartTotal;
   const progressRatio = Math.min(1, Math.max(0, cartTotal / FREE));
 
   if (!isCartOpen) return null;
+
+  const handleApply = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!couponInput.trim()) return;
+    const res = applyCoupon(couponInput);
+    if (res.success) {
+      setCouponMsg({ text: res.message, error: false });
+      setCouponInput("");
+    } else {
+      setCouponMsg({ text: res.message, error: true });
+    }
+    setTimeout(() => setCouponMsg(null), 3500);
+  };
 
   return (
     <>
@@ -89,6 +117,7 @@ export function CartDrawer() {
         </div>
 
         <div>
+          {/* Free Shipping Progress Indicator */}
           <div id="shipMsg" style={{ fontSize: ".85rem", marginBottom: "6px" }}>
             {cart.length === 0
               ? `Free delivery over ৳${FREE.toLocaleString("en-US")}.`
@@ -107,9 +136,71 @@ export function CartDrawer() {
             />
           </div>
 
-          <div className="tot">
-            <span>Subtotal</span>
-            <span id="sub">৳{cartTotal.toLocaleString("en-US")}</span>
+          {/* Coupon Code Section */}
+          {cart.length > 0 && (
+            <div className="my-3 pt-3 border-t border-border/40 text-xs">
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between p-2 rounded-lg bg-[#DFCA9B]/15 border border-[#DFCA9B]/30 text-text">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-3.5 h-3.5 text-[#DFCA9B]" />
+                    <div>
+                      <span className="font-semibold uppercase tracking-wider">{appliedCoupon.code}</span>
+                      <span className="ml-1 text-[11px] opacity-80">({appliedCoupon.discountPercent}% off applied)</span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeCoupon}
+                    className="p-1 hover:text-red-500 transition-colors"
+                    title="Remove coupon"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApply} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value)}
+                    placeholder="Privilege code (e.g. NOORE10)"
+                    className="flex-1 px-3 py-1.5 rounded-full bg-surface border border-border text-xs text-text uppercase placeholder:normal-case placeholder:text-muted focus:outline-none focus:border-text"
+                  />
+                  <button
+                    type="submit"
+                    className="px-3.5 py-1.5 rounded-full bg-text text-bg text-[11px] uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity"
+                  >
+                    Apply
+                  </button>
+                </form>
+              )}
+
+              {couponMsg && (
+                <p className={`mt-1.5 text-[11px] ${couponMsg.error ? "text-red-500" : "text-emerald-600 dark:text-emerald-400 font-medium"}`}>
+                  {couponMsg.text}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Price Breakdown */}
+          <div className="space-y-1 my-2">
+            <div className="flex justify-between text-xs text-muted">
+              <span>Subtotal</span>
+              <span>৳{cartTotal.toLocaleString("en-US")}</span>
+            </div>
+
+            {appliedCoupon && discountAmount > 0 && (
+              <div className="flex justify-between text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                <span>Privilege Discount ({appliedCoupon.code})</span>
+                <span>−৳{discountAmount.toLocaleString("en-US")}</span>
+              </div>
+            )}
+
+            <div className="tot pt-1 border-t border-border/40">
+              <span>Total</span>
+              <span id="sub">৳{finalCartTotal.toLocaleString("en-US")}</span>
+            </div>
           </div>
 
           <Link

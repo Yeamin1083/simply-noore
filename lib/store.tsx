@@ -135,6 +135,11 @@ interface StoreContextType {
   coupons: Coupon[];
   addCoupon: (coupon: Coupon) => void;
   deleteCoupon: (code: string) => void;
+  appliedCoupon: Coupon | null;
+  applyCoupon: (code: string) => { success: boolean; message: string; discountPercent?: number };
+  removeCoupon: () => void;
+  discountAmount: number;
+  finalCartTotal: number;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -153,6 +158,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
   const [articles, setArticles] = useState<JournalArticle[]>(INITIAL_ARTICLES as JournalArticle[]);
   const [coupons, setCoupons] = useState<Coupon[]>(INITIAL_COUPONS);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
 
   // Load persisted settings
   useEffect(() => {
@@ -206,6 +212,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(savedCoupons);
         if (Array.isArray(parsed) && parsed.length > 0) {
           setCoupons(parsed);
+        }
+      }
+
+      const savedAppliedCoupon = localStorage.getItem("sn_applied_coupon");
+      if (savedAppliedCoupon) {
+        const parsed = JSON.parse(savedAppliedCoupon);
+        if (parsed && parsed.code) {
+          setAppliedCoupon(parsed);
         }
       }
     } catch {
@@ -458,11 +472,40 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const applyCoupon = (code: string) => {
+    const trimmed = code.trim().toUpperCase();
+    const found = coupons.find((c) => c.code.toUpperCase() === trimmed && c.active);
+    if (!found) {
+      return { success: false, message: "Invalid or inactive privilege code." };
+    }
+    setAppliedCoupon(found);
+    try {
+      localStorage.setItem("sn_applied_coupon", JSON.stringify(found));
+    } catch {}
+    return {
+      success: true,
+      message: `Privilege code "${found.code}" applied! ${found.discountPercent}% off.`,
+      discountPercent: found.discountPercent,
+    };
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    try {
+      localStorage.removeItem("sn_applied_coupon");
+    } catch {}
+  };
+
   const cartTotal = cart.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  const discountAmount = appliedCoupon
+    ? Math.round(cartTotal * (appliedCoupon.discountPercent / 100))
+    : 0;
+  const finalCartTotal = Math.max(0, cartTotal - discountAmount);
 
   return (
     <StoreContext.Provider
@@ -511,6 +554,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         coupons,
         addCoupon,
         deleteCoupon,
+        appliedCoupon,
+        applyCoupon,
+        removeCoupon,
+        discountAmount,
+        finalCartTotal,
       }}
     >
       {children}

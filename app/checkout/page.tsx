@@ -14,6 +14,8 @@ import {
   CheckCircle2,
   AlertCircle,
   HelpCircle,
+  Tag,
+  X,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { formatBDT } from "@/lib/utils";
@@ -28,7 +30,22 @@ const BD_DISTRICTS = [
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, cartTotal, clearCart, lang, addOrder, siteSettings } = useStore();
+  const {
+    cart,
+    cartTotal,
+    clearCart,
+    lang,
+    addOrder,
+    siteSettings,
+    appliedCoupon,
+    applyCoupon,
+    removeCoupon,
+    discountAmount,
+    finalCartTotal,
+  } = useStore();
+
+  const [couponInput, setCouponInput] = useState("");
+  const [couponMsg, setCouponMsg] = useState<{ text: string; error?: boolean } | null>(null);
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -58,7 +75,20 @@ export default function CheckoutPage() {
     : district === "Dhaka"
     ? siteSettings?.insideDhakaShipping || 80
     : siteSettings?.outsideDhakaShipping || 130;
-  const total = cartTotal + deliveryCharge;
+  const total = finalCartTotal + deliveryCharge;
+
+  const handleApplyCoupon = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!couponInput.trim()) return;
+    const res = applyCoupon(couponInput);
+    if (res.success) {
+      setCouponMsg({ text: res.message, error: false });
+      setCouponInput("");
+    } else {
+      setCouponMsg({ text: res.message, error: true });
+    }
+    setTimeout(() => setCouponMsg(null), 3500);
+  };
 
   const activeMerchantNumber =
     paymentMethod === "nagad"
@@ -115,9 +145,13 @@ export default function CheckoutPage() {
       phone: phone,
       district: district,
       address: address + (orderNotes ? ` (Note: ${orderNotes})` : ""),
-      items: cart
-        .map((i) => `${i.title} (${i.colorName || "Standard"}, ${i.size}) x${i.quantity}`)
-        .join(", "),
+      items:
+        cart
+          .map((i) => `${i.title} (${i.colorName || "Standard"}, ${i.size}) x${i.quantity}`)
+          .join(", ") +
+        (appliedCoupon
+          ? ` · [Privilege Code: ${appliedCoupon.code} (-${appliedCoupon.discountPercent}%)]`
+          : ""),
       total: total,
       payment:
         paymentMethod === "cod"
@@ -142,6 +176,7 @@ export default function CheckoutPage() {
 
     setTimeout(() => {
       clearCart();
+      removeCoupon();
       router.push("/order-success");
     }, 1200);
   };
@@ -592,12 +627,81 @@ export default function CheckoutPage() {
               ))}
             </div>
 
+            {/* Coupon Privilege Code Box */}
+            <div className="pt-3 border-t border-border/30 text-xs">
+              <label className="block text-[11px] uppercase tracking-wider font-semibold text-text mb-2">
+                Privilege &amp; Offer Code
+              </label>
+
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#DFCA9B]/15 border border-[#DFCA9B]/30 text-text">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-[#DFCA9B]" />
+                    <div>
+                      <span className="font-semibold uppercase tracking-wider text-xs">
+                        {appliedCoupon.code}
+                      </span>
+                      <span className="ml-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                        ({appliedCoupon.discountPercent}% OFF APPLIED)
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeCoupon}
+                    className="p-1 hover:text-red-500 transition-colors"
+                    title="Remove coupon"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value)}
+                    placeholder="Enter code (e.g. NOORE10)"
+                    className="flex-1 px-3.5 py-2 rounded-xl bg-surface-2/60 border border-border text-xs uppercase placeholder:normal-case placeholder:text-muted focus:outline-none focus:border-text transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-xl bg-text text-bg text-xs uppercase tracking-wider font-semibold hover:opacity-90 transition-opacity"
+                  >
+                    Apply
+                  </button>
+                </form>
+              )}
+
+              {couponMsg && (
+                <p
+                  className={`mt-1.5 text-[11px] ${
+                    couponMsg.error
+                      ? "text-red-500"
+                      : "text-emerald-600 dark:text-emerald-400 font-medium"
+                  }`}
+                >
+                  {couponMsg.text}
+                </p>
+              )}
+            </div>
+
             {/* Calculations */}
             <div className="space-y-2 pt-3 border-t border-border/30 text-xs">
               <div className="flex justify-between items-center text-muted">
                 <span>Items Subtotal</span>
                 <span className="font-mono">{formatBDT(cartTotal)}</span>
               </div>
+
+              {appliedCoupon && discountAmount > 0 && (
+                <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-medium">
+                  <span className="flex items-center gap-1">
+                    <Tag className="w-3 h-3" />
+                    <span>Privilege Discount ({appliedCoupon.code})</span>
+                  </span>
+                  <span className="font-mono">−{formatBDT(discountAmount)}</span>
+                </div>
+              )}
 
               <div className="flex justify-between items-center text-muted">
                 <span>

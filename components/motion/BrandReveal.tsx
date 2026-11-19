@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { assetPath } from "@/lib/utils";
 
 export function BrandReveal() {
   const pathname = usePathname();
@@ -76,30 +78,36 @@ export function BrandReveal() {
 
     // Generate starry particles
     const starList = [];
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 20; i++) {
       starList.push({
         id: i,
-        left: `${(i * 6.2 + Math.random() * 4).toFixed(1)}%`,
+        left: `${(i * 5.1 + Math.random() * 3).toFixed(1)}%`,
         top: `${(Math.random() * 90).toFixed(1)}%`,
         delay: `${(i * 0.2).toFixed(1)}s`,
       });
     }
     setStars(starList);
 
-    // Auto swap-up after 2.4s (well within 3.0s ceiling)
+    // Auto swap-up after 2.6s
     const autoTimer = setTimeout(() => {
       finishReveal(false);
-    }, 2400);
+    }, 2600);
 
-    // Failsafe timer: guarantee site is unlocked after 3.2s even if anything glitches
+    // Failsafe timer: guarantee site is unlocked after 3.4s
     const failsafeTimer = setTimeout(() => {
       finishReveal(true);
-    }, 3200);
+    }, 3400);
 
     // Event listeners to skip on any user gesture (click, scroll, key, touch)
     const handleGesture = () => finishReveal(true);
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" || e.key === "Enter" || e.key === " " || e.key === "ArrowDown" || e.key === "ArrowRight") {
+      if (
+        e.key === "Escape" ||
+        e.key === "Enter" ||
+        e.key === " " ||
+        e.key === "ArrowDown" ||
+        e.key === "ArrowRight"
+      ) {
         finishReveal(true);
       }
     };
@@ -142,6 +150,21 @@ export function BrandReveal() {
       </div>
 
       <div className="intro-inner" style={{ pointerEvents: "auto" }}>
+        {/* Animated Brand Avatar placed seamlessly above the title */}
+        <div className="mb-3 sm:mb-4 flex justify-center">
+          <div className="w-20 h-16 sm:w-28 sm:h-22 md:w-32 md:h-26 flex items-center justify-center transform transition-transform duration-500 hover:scale-105">
+            <Image
+              src={assetPath("/brand-avatar-waving-transparent.gif")}
+              alt="Simply Nooré Emblem"
+              width={180}
+              height={150}
+              priority
+              unoptimized
+              className="w-full h-full object-contain filter drop-shadow-[0_4px_12px_rgba(31,42,35,0.15)] animate-fadeup"
+            />
+          </div>
+        </div>
+
         {/* Glow copy */}
         <div className="wm-glow wm" aria-hidden="true">
           <span>Simply </span>
@@ -170,7 +193,7 @@ export function BrandReveal() {
 
         {/* Enter Atelier Interactive Pill */}
         <div className="mt-8 flex items-center justify-center gap-4">
-          <button
+          {/* <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
@@ -181,7 +204,7 @@ export function BrandReveal() {
           >
             <span>Enter Atelier</span>
             <span className="plus transition-transform group-hover:translate-x-1">→</span>
-          </button>
+          </button> */}
         </div>
       </div>
 

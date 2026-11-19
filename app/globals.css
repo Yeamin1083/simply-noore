@@ -509,13 +509,14 @@ html.bn .pill {
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 0 0 50% 50%/0 0 14vw 14vw;
-  transition: transform .9s var(--ease-io);
-  will-change: transform;
+  border-radius: 0;
+  transition: opacity .8s var(--ease-out), visibility .8s;
+  will-change: opacity;
 }
 
 .intro.leave {
-  transform: translateY(-112%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .intro.fast {
@@ -526,11 +527,12 @@ html.bn .pill {
   position: relative;
   text-align: center;
   padding: 0 16px;
-  transition: transform .9s var(--ease-io);
+  transition: opacity .8s var(--ease-out), transform .8s var(--ease-out);
 }
 
 .intro.leave .intro-inner {
-  transform: translateY(-22%);
+  opacity: 0;
+  transform: scale(0.98);
 }
 
 .wm {
@@ -2063,4 +2065,53 @@ body.entered .hero-photo {
   .concierge .t {
     max-width: 0;
   }
+}
+
+
+/* Custom Atelier Motion & Brand Reveal Animations */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes marquee-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 45s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 35s linear infinite;
+}
+
+.animate-marquee-ticker {
+  display: inline-flex;
+  animation: marquee-ticker 36s linear infinite;
+}
+
+.animate-marquee-ticker:hover {
+  animation-play-state: paused;
+}
+
+.animate-fadeIn {
+  animation: fadeInScale 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
